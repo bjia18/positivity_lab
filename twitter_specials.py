@@ -7,6 +7,7 @@ import re #regular expressions module
 # Define abbreviations
 # as regular expressions together with their expansions
 # (\b marks the word boundary):
+
 re_repl = {
     r"\br\b": "are",
     r"\bu\b": "you",
@@ -46,16 +47,21 @@ emo_repl = {
 }
 
 # make sure that e.g. :dd is replaced before :d
-emo_repl_order = [k for (k_len,k) in
-                  reversed(sorted([(len(k),k) for k in emo_repl.keys()]))]
+emo_repl_order = [k for (k_len,k) in reversed(sorted([(len(k),k) for k in emo_repl.keys()]))]
 
 
 def clean_tweet(tweet, emo_repl_order, emo_repl, re_repl ):
     tweet = tweet.lower()
+    tweet = re.sub(r"http\S+", "", tweet)
     for k in emo_repl_order:
         tweet = tweet.replace(k, emo_repl[k])
 
     for r, repl in re_repl.items():
         tweet = re.sub(r, repl, tweet)
+    tweet=re.sub(r'(\s)@\w+', r'\1', tweet)
+    tweet = re.sub('[#.,!?;:]', '', tweet)
 
     return tweet
+
+#tweet=clean_tweet("http://t.co/TWAeUDBp", emo_repl_order, emo_repl, re_repl)
+#print(tweet)
